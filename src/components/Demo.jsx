@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './Demo.css';
 
 const CLASSES = [
@@ -11,6 +11,25 @@ const CLASSES = [
 
 export default function Demo() {
     const [view, setView] = useState('overlay');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside of it
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleDownload = (type) => {
+        console.log(`Trigger download for: ${type}`);
+        // Add your actual download logic here
+        setIsDropdownOpen(false);
+    };
 
     return (
         <section id="demo" className="demo-section">
@@ -31,7 +50,84 @@ export default function Demo() {
                                 </button>
                             ))}
                         </div>
-                        <button className="view-btn">DOWNLOAD ▼</button>
+
+                        {/* Updated Download Dropdown */}
+                        <div style={{ position: 'relative' }} ref={dropdownRef}>
+                            <button
+                                className="view-btn"
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                                DOWNLOAD ▼
+                            </button>
+
+                            {isDropdownOpen && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    right: 0,
+                                    marginTop: '0.5rem',
+                                    backgroundColor: '#1e293b', // fallback dark background
+                                    border: '1px solid var(--border-subtle)',
+                                    borderRadius: '6px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    minWidth: '150px', // slightly wider for the new text
+                                    zIndex: 50,
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                }}>
+                                    <button
+                                        onClick={() => handleDownload('mask png')}
+                                        style={{
+                                            padding: '0.75rem 1rem',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            borderBottom: '1px solid var(--border-subtle)',
+                                            color: 'white',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem'
+                                        }}
+                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                                    >
+                                        Mask PNG
+                                    </button>
+                                    <button
+                                        onClick={() => handleDownload('overlay png')}
+                                        style={{
+                                            padding: '0.75rem 1rem',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            borderBottom: '1px solid var(--border-subtle)', // Added border here
+                                            color: 'white',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem'
+                                        }}
+                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                                    >
+                                        Overlay PNG
+                                    </button>
+                                    <button
+                                        onClick={() => handleDownload('csv summary')}
+                                        style={{
+                                            padding: '0.75rem 1rem',
+                                            background: 'transparent',
+                                            border: 'none',
+                                            color: 'white',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem'
+                                        }}
+                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                                    >
+                                        CSV Summary
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="render-area tech-font">
                         <span style={{ opacity: 0.5, letterSpacing: '2px' }}>[ {view.toUpperCase()} RENDER ]</span>
@@ -40,7 +136,6 @@ export default function Demo() {
 
                 {/* Sidebar Panel */}
                 <div className="glass-panel sidebar-panel">
-
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
                         <div style={{ padding: '0.8rem', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid var(--accent-neon)', borderRadius: '6px', color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>
@@ -72,7 +167,6 @@ export default function Demo() {
                             </div>
                         ))}
                     </div>
-
                 </div>
             </div>
         </section>

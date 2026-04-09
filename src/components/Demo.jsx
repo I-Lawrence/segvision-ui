@@ -16,10 +16,11 @@ const MODELS = [
 ];
 
 export default function Demo() {
+    // Standard View & Model States
     const [view, setView] = useState('overlay');
     const [selectedModel, setSelectedModel] = useState('best');
     
-    // Dropdown states
+    // Dropdown visibility states
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
     
@@ -41,20 +42,23 @@ export default function Demo() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Placeholder function for download logic
     const handleDownload = (type) => {
         console.log(`Trigger download for: ${type}`);
+        // Add your actual download logic here (e.g., triggering an API or creating a blob)
         setIsDownloadOpen(false); 
     };
 
-    // Helper to get current model label
+    // Helper to format the current model's display name
     const currentModelLabel = MODELS.find(m => m.id === selectedModel)?.label || 'Select Model';
 
     return (
+        // The id="demo" here is what allows your Navbar scroll animation to target this section
         <section id="demo" className="demo-section">
             <h2 className="section-title">Try it Yourself</h2>
 
             <div className="demo-grid">
-                {/* Main Render Panel */}
+                {/* ---------------- MAIN RENDER PANEL ---------------- */}
                 <div className="glass-panel">
                     <div className="toolbar">
                         <div className="view-controls">
@@ -69,13 +73,26 @@ export default function Demo() {
                             ))}
                         </div>
                         
-                        {/* Download Dropdown */}
+                        {/* Download Dropdown Section */}
                         <div style={{ position: 'relative' }} ref={downloadRef}>
                             <button 
                                 className="view-btn" 
                                 onClick={() => setIsDownloadOpen(!isDownloadOpen)}
+                                onMouseOver={(e) => {
+                                    e.target.style.boxShadow = '0 0 12px rgba(255, 255, 255, 0.4)';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                                style={{
+                                    transition: 'all 0.3s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem'
+                                }}
                             >
-                                DOWNLOAD ▼
+                                DOWNLOAD 
+                                <span style={{ fontSize: '0.7rem', transition: 'transform 0.3s', transform: isDownloadOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                             </button>
                             
                             {isDownloadOpen && (
@@ -91,71 +108,48 @@ export default function Demo() {
                                     flexDirection: 'column',
                                     minWidth: '150px', 
                                     zIndex: 50,
-                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+                                    overflow: 'hidden'
                                 }}>
-                                    <button 
-                                        onClick={() => handleDownload('mask png')}
-                                        style={{
-                                            padding: '0.75rem 1rem',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            borderBottom: '1px solid var(--border-subtle)',
-                                            color: 'white',
-                                            textAlign: 'left',
-                                            cursor: 'pointer',
-                                            fontSize: '0.85rem'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                                    >
-                                        Mask PNG
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDownload('overlay png')}
-                                        style={{
-                                            padding: '0.75rem 1rem',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            borderBottom: '1px solid var(--border-subtle)',
-                                            color: 'white',
-                                            textAlign: 'left',
-                                            cursor: 'pointer',
-                                            fontSize: '0.85rem'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                                    >
-                                        Overlay PNG
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDownload('csv summary')}
-                                        style={{
-                                            padding: '0.75rem 1rem',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            color: 'white',
-                                            textAlign: 'left',
-                                            cursor: 'pointer',
-                                            fontSize: '0.85rem'
-                                        }}
-                                        onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                                        onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-                                    >
-                                        CSV Summary
-                                    </button>
+                                    {[
+                                        { id: 'mask png', label: 'Mask PNG' },
+                                        { id: 'overlay png', label: 'Overlay PNG' },
+                                        { id: 'csv summary', label: 'CSV Summary' }
+                                    ].map((option, index, arr) => (
+                                        <button 
+                                            key={option.id}
+                                            onClick={() => handleDownload(option.id)}
+                                            style={{
+                                                padding: '0.75rem 1rem',
+                                                background: 'transparent',
+                                                border: 'none',
+                                                borderBottom: index === arr.length - 1 ? 'none' : '1px solid var(--border-subtle)',
+                                                color: 'white',
+                                                textAlign: 'left',
+                                                cursor: 'pointer',
+                                                fontSize: '0.85rem',
+                                                transition: 'background-color 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.08)'}
+                                            onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
                     </div>
+                    
                     <div className="render-area tech-font">
                         <span style={{ opacity: 0.5, letterSpacing: '2px' }}>[ {view.toUpperCase()} RENDER ]</span>
                     </div>
                 </div>
 
-                {/* Sidebar Panel */}
+                {/* ---------------- SIDEBAR PANEL ---------------- */}
                 <div className="glass-panel sidebar-panel">
                     
-                    {/* Model Dropdown Section */}
+                    {/* Model Selector Dropdown */}
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
                         
@@ -241,6 +235,7 @@ export default function Demo() {
                         </div>
                     </div>
 
+                    {/* Classes Breakdown */}
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '1.5rem', paddingTop: '1.5rem' }}>
                             <div className="panel-header" style={{ margin: 0 }}>Classes</div>
@@ -262,6 +257,7 @@ export default function Demo() {
                             </div>
                         ))}
                     </div>
+                    
                 </div>
             </div>
         </section>

@@ -9,8 +9,15 @@ const CLASSES = [
     { name: 'Others', val: '0.5%', color: '#64748b' }
 ];
 
+const MODELS = [
+    { id: 'best', label: 'Best Model' },
+    { id: 'latest', label: 'Latest Model' },
+    { id: 'baseline', label: 'Baseline Model' }
+];
+
 export default function Demo() {
     const [view, setView] = useState('overlay');
+    const [selectedModel, setSelectedModel] = useState('best'); // New state for models
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -28,7 +35,7 @@ export default function Demo() {
     const handleDownload = (type) => {
         console.log(`Trigger download for: ${type}`);
         // Add your actual download logic here
-        setIsDropdownOpen(false);
+        setIsDropdownOpen(false); 
     };
 
     return (
@@ -50,32 +57,32 @@ export default function Demo() {
                                 </button>
                             ))}
                         </div>
-
-                        {/* Updated Download Dropdown */}
+                        
+                        {/* Download Dropdown */}
                         <div style={{ position: 'relative' }} ref={dropdownRef}>
-                            <button
-                                className="view-btn"
+                            <button 
+                                className="view-btn" 
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             >
                                 DOWNLOAD ▼
                             </button>
-
+                            
                             {isDropdownOpen && (
                                 <div style={{
                                     position: 'absolute',
                                     top: '100%',
                                     right: 0,
                                     marginTop: '0.5rem',
-                                    backgroundColor: '#1e293b', // fallback dark background
+                                    backgroundColor: '#1e293b', 
                                     border: '1px solid var(--border-subtle)',
                                     borderRadius: '6px',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    minWidth: '150px', // slightly wider for the new text
+                                    minWidth: '150px', 
                                     zIndex: 50,
                                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                                 }}>
-                                    <button
+                                    <button 
                                         onClick={() => handleDownload('mask png')}
                                         style={{
                                             padding: '0.75rem 1rem',
@@ -92,13 +99,13 @@ export default function Demo() {
                                     >
                                         Mask PNG
                                     </button>
-                                    <button
+                                    <button 
                                         onClick={() => handleDownload('overlay png')}
                                         style={{
                                             padding: '0.75rem 1rem',
                                             background: 'transparent',
                                             border: 'none',
-                                            borderBottom: '1px solid var(--border-subtle)', // Added border here
+                                            borderBottom: '1px solid var(--border-subtle)',
                                             color: 'white',
                                             textAlign: 'left',
                                             cursor: 'pointer',
@@ -109,7 +116,7 @@ export default function Demo() {
                                     >
                                         Overlay PNG
                                     </button>
-                                    <button
+                                    <button 
                                         onClick={() => handleDownload('csv summary')}
                                         style={{
                                             padding: '0.75rem 1rem',
@@ -136,18 +143,38 @@ export default function Demo() {
 
                 {/* Sidebar Panel */}
                 <div className="glass-panel sidebar-panel">
+                    
+                    {/* Updated Select Model Section */}
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
-                        <div style={{ padding: '0.8rem', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid var(--accent-neon)', borderRadius: '6px', color: 'white', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-                            Best Model (Latest Model)
-                        </div>
-                        <div style={{ padding: '0.8rem', border: '1px solid var(--border-subtle)', borderRadius: '6px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                            Baseline Model
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {MODELS.map((model) => {
+                                const isActive = selectedModel === model.id;
+                                return (
+                                    <div 
+                                        key={model.id}
+                                        onClick={() => setSelectedModel(model.id)}
+                                        style={{ 
+                                            padding: '0.8rem', 
+                                            background: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent', 
+                                            border: `1px solid ${isActive ? 'var(--accent-neon)' : 'var(--border-subtle)'}`, 
+                                            borderRadius: '6px', 
+                                            color: isActive ? 'white' : 'var(--text-muted)', 
+                                            fontSize: '0.9rem', 
+                                            fontWeight: isActive ? '600' : 'normal',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        {model.label}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
                     <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '1.5rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '1.5rem', paddingTop: '1.5rem' }}>
                             <div className="panel-header" style={{ margin: 0 }}>Classes</div>
                             <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>CONFIDENCE</div>

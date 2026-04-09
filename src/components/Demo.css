@@ -1,3 +1,42 @@
+/* =========================================
+   GLOBAL PROJECT STYLES (Scrollbar & Smoothness)
+   ========================================= */
+
+/* 1. Fixes the awkward jumping - makes all scrolls slow and smooth */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 2. Custom Scrollbar Styling (Webkit Browsers: Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 10px; /* Width of the entire scrollbar */
+}
+
+/* The background track of the scrollbar */
+::-webkit-scrollbar-track {
+    background: #0b0518; /* Matches your deep dark background */
+}
+
+/* The draggable handle */
+::-webkit-scrollbar-thumb {
+    background: var(--accent-neon, #a855f7); /* Your purple neon theme */
+    border-radius: 10px;
+    border: 2px solid #0b0518; /* Creates a padding effect around the thumb */
+    box-shadow: 0 0 5px var(--accent-neon);
+}
+
+/* Hover effect on the scrollbar handle */
+::-webkit-scrollbar-thumb:hover {
+    background: #c084fc; /* Slightly lighter purple on hover */
+    box-shadow: 0 0 10px #c084fc;
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-neon) #0b0518;
+}
+
 .section-title {
     text-align: center;
     font-size: 2.5rem;

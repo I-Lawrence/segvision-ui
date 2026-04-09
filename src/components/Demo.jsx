@@ -10,22 +10,31 @@ const CLASSES = [
 ];
 
 const MODELS = [
-    { id: 'best', label: 'Best Model' },
+    { id: 'best', label: 'Best Model (Latest Model)' },
     { id: 'latest', label: 'Latest Model' },
     { id: 'baseline', label: 'Baseline Model' }
 ];
 
 export default function Demo() {
     const [view, setView] = useState('overlay');
-    const [selectedModel, setSelectedModel] = useState('best'); // New state for models
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const [selectedModel, setSelectedModel] = useState('best');
+    
+    // Dropdown states
+    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+    const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
+    
+    // Refs for click-outside detection
+    const downloadRef = useRef(null);
+    const modelDropdownRef = useRef(null);
 
-    // Close dropdown when clicking outside of it
+    // Unified click-outside handler for both dropdowns
     useEffect(() => {
         function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsDropdownOpen(false);
+            if (downloadRef.current && !downloadRef.current.contains(event.target)) {
+                setIsDownloadOpen(false);
+            }
+            if (modelDropdownRef.current && !modelDropdownRef.current.contains(event.target)) {
+                setIsModelDropdownOpen(false);
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -34,9 +43,11 @@ export default function Demo() {
 
     const handleDownload = (type) => {
         console.log(`Trigger download for: ${type}`);
-        // Add your actual download logic here
-        setIsDropdownOpen(false); 
+        setIsDownloadOpen(false); 
     };
+
+    // Helper to get current model label
+    const currentModelLabel = MODELS.find(m => m.id === selectedModel)?.label || 'Select Model';
 
     return (
         <section id="demo" className="demo-section">
@@ -59,15 +70,15 @@ export default function Demo() {
                         </div>
                         
                         {/* Download Dropdown */}
-                        <div style={{ position: 'relative' }} ref={dropdownRef}>
+                        <div style={{ position: 'relative' }} ref={downloadRef}>
                             <button 
                                 className="view-btn" 
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                onClick={() => setIsDownloadOpen(!isDownloadOpen)}
                             >
                                 DOWNLOAD ▼
                             </button>
                             
-                            {isDropdownOpen && (
+                            {isDownloadOpen && (
                                 <div style={{
                                     position: 'absolute',
                                     top: '100%',
@@ -144,32 +155,89 @@ export default function Demo() {
                 {/* Sidebar Panel */}
                 <div className="glass-panel sidebar-panel">
                     
-                    {/* Updated Select Model Section */}
+                    {/* Model Dropdown Section */}
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            {MODELS.map((model) => {
-                                const isActive = selectedModel === model.id;
-                                return (
-                                    <div 
-                                        key={model.id}
-                                        onClick={() => setSelectedModel(model.id)}
-                                        style={{ 
-                                            padding: '0.8rem', 
-                                            background: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent', 
-                                            border: `1px solid ${isActive ? 'var(--accent-neon)' : 'var(--border-subtle)'}`, 
-                                            borderRadius: '6px', 
-                                            color: isActive ? 'white' : 'var(--text-muted)', 
-                                            fontSize: '0.9rem', 
-                                            fontWeight: isActive ? '600' : 'normal',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease'
-                                        }}
-                                    >
-                                        {model.label}
-                                    </div>
-                                );
-                            })}
+                        
+                        <div style={{ position: 'relative' }} ref={modelDropdownRef}>
+                            <button
+                                onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                                onMouseOver={(e) => {
+                                    e.target.style.boxShadow = '0 0 12px rgba(168, 85, 247, 0.6)';
+                                    e.target.style.borderColor = '#d8b4fe';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.boxShadow = 'none';
+                                    e.target.style.borderColor = 'var(--accent-neon)';
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.8rem',
+                                    background: 'rgba(168, 85, 247, 0.1)',
+                                    border: '1px solid var(--accent-neon)',
+                                    borderRadius: '6px',
+                                    color: 'white',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <span>{currentModelLabel}</span>
+                                <span style={{ fontSize: '0.7rem', transition: 'transform 0.3s', transform: isModelDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+                            </button>
+
+                            {isModelDropdownOpen && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    width: '100%',
+                                    marginTop: '0.5rem',
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid var(--border-subtle)',
+                                    borderRadius: '6px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    zIndex: 50,
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+                                    overflow: 'hidden'
+                                }}>
+                                    {MODELS.map((model, index) => {
+                                        const isActive = selectedModel === model.id;
+                                        const isLast = index === MODELS.length - 1;
+                                        
+                                        return (
+                                            <button
+                                                key={model.id}
+                                                onClick={() => {
+                                                    setSelectedModel(model.id);
+                                                    setIsModelDropdownOpen(false);
+                                                }}
+                                                onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(168, 85, 247, 0.2)'}
+                                                onMouseOut={(e) => e.target.style.backgroundColor = isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent'}
+                                                style={{
+                                                    padding: '0.8rem',
+                                                    background: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
+                                                    border: 'none',
+                                                    borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
+                                                    color: isActive ? 'white' : 'var(--text-muted)',
+                                                    textAlign: 'left',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: isActive ? '600' : 'normal',
+                                                    transition: 'background-color 0.2s ease'
+                                                }}
+                                            >
+                                                {model.label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </div>
 

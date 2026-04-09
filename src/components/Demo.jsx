@@ -16,7 +16,7 @@ const MODELS = [
     { id: 'baseline', label: 'Baseline Model' }
 ];
 
-// --- NEW METRICS DATA ---
+// --- METRICS DATA ---
 const MODEL_METRICS = {
     mIoU: '84.2%',
     dice: '89.1%',
@@ -30,6 +30,13 @@ const PER_CLASS_IOU = [
     { name: 'Sky', val: '94.3%', color: '#0ea5e9' },
     { name: 'Structure', val: '76.8%', color: '#a855f7' },
     { name: 'Others', val: '55.2%', color: '#64748b' }
+];
+
+// --- NEW COMPARISON DATA ---
+const MODEL_COMPARISON_DATA = [
+    { name: 'Baseline', iou: 72.4, acc: 86.8 },
+    { name: 'Latest', iou: 81.5, acc: 93.2 },
+    { name: 'Best Model', iou: 84.2, acc: 95.6 }
 ];
 
 // ==========================================
@@ -352,10 +359,10 @@ export default function Demo() {
                 </div>
             </div>
 
-            {/* ================= NEW: GLOWING RANGE SLIDER ================= */}
+            {/* ================= GLOWING RANGE SLIDER ================= */}
             <GlowingRangeSlider />
 
-            {/* ================= NEW: PERFORMANCE METRICS SECTION ================= */}
+            {/* ================= PERFORMANCE METRICS SECTION ================= */}
             <div className="glass-panel metrics-panel" style={{ marginTop: '2rem' }}>
                 <div className="panel-header" style={{ marginBottom: '1.5rem' }}>Evaluation Metrics</div>
                 
@@ -399,9 +406,89 @@ export default function Demo() {
                             ))}
                         </div>
                     </div>
-
                 </div>
             </div>
+
+            {/* ================= NEW: MODEL COMPARISON BAR GRAPH ================= */}
+            <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <div className="panel-header">Model Performance Comparison</div>
+                    
+                    {/* Graph Legend */}
+                    <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ width: '12px', height: '12px', background: 'var(--accent-neon)', borderRadius: '3px' }}></div>
+                            Mean IoU (%)
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ width: '12px', height: '12px', background: '#10b981', borderRadius: '3px' }}></div>
+                            Pixel Accuracy (%)
+                        </div>
+                    </div>
+                </div>
+
+                {/* Graph Area Container */}
+                <div style={{ position: 'relative', height: '320px', paddingLeft: '40px', paddingTop: '20px' }}>
+                    
+                    {/* Y-Axis Guidelines & Labels */}
+                    {[0, 25, 50, 75, 100].map((tick) => (
+                        <div key={tick} style={{ position: 'absolute', left: 0, bottom: `${tick}%`, width: '100%', borderBottom: tick === 0 ? '2px solid var(--border-subtle)' : '1px dashed rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-end', zIndex: 1 }}>
+                            <span className="tech-font" style={{ position: 'absolute', left: '0px', bottom: '-8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                {tick}
+                            </span>
+                        </div>
+                    ))}
+
+                    {/* Bars Container */}
+                    <div style={{ display: 'flex', height: '100%', justifyContent: 'space-around', alignItems: 'flex-end', position: 'relative', zIndex: 2, paddingLeft: '20px' }}>
+                        {MODEL_COMPARISON_DATA.map((data, idx) => (
+                            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '1rem', width: '20%' }}>
+                                
+                                {/* Grouped Bars */}
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', height: '100%', width: '100%', justifyContent: 'center' }}>
+                                    
+                                    {/* IoU Bar */}
+                                    <div style={{ 
+                                        height: `${data.iou}%`, 
+                                        width: '45px', 
+                                        background: 'var(--accent-neon)', 
+                                        borderRadius: '4px 4px 0 0', 
+                                        position: 'relative',
+                                        transition: 'height 1s ease-out',
+                                        boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)'
+                                    }}>
+                                        <span className="tech-font" style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem', color: 'white', fontWeight: 'bold' }}>
+                                            {data.iou}
+                                        </span>
+                                    </div>
+
+                                    {/* Accuracy Bar */}
+                                    <div style={{ 
+                                        height: `${data.acc}%`, 
+                                        width: '45px', 
+                                        background: '#10b981', 
+                                        borderRadius: '4px 4px 0 0', 
+                                        position: 'relative',
+                                        transition: 'height 1s ease-out 0.2s',
+                                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)'
+                                    }}>
+                                        <span className="tech-font" style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem', color: 'white', fontWeight: 'bold' }}>
+                                            {data.acc}
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                                
+                                {/* X-Axis Label */}
+                                <div style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginTop: '10px' }}>
+                                    {data.name}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
         </section>
     );
 }

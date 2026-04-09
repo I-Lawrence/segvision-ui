@@ -32,12 +32,25 @@ const PER_CLASS_IOU = [
     { name: 'Others', val: '55.2%', color: '#64748b' }
 ];
 
-// --- NEW COMPARISON DATA ---
+// --- MODEL COMPARISON DATA ---
 const MODEL_COMPARISON_DATA = [
     { name: 'Baseline', iou: 72.4, acc: 86.8 },
     { name: 'Latest', iou: 81.5, acc: 93.2 },
     { name: 'Best Model', iou: 84.2, acc: 95.6 }
 ];
+
+// ==========================================
+// ANIMATED RIBBON BACKGROUND (NEW)
+// ==========================================
+function AnimatedBackground() {
+    return (
+        <div className="ribbon-background-container">
+            <div className="ribbon-wave ribbon-1"></div>
+            <div className="ribbon-wave ribbon-2"></div>
+            <div className="ribbon-wave ribbon-3"></div>
+        </div>
+    );
+}
 
 // ==========================================
 // GLOWING RANGE SLIDER COMPONENT
@@ -77,46 +90,28 @@ function GlowingRangeSlider() {
 
     return (
         <div className="glass-panel" style={{ padding: '2.5rem', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginTop: '2rem' }}>
-            {/* Dynamic Value Display - Font size decreased to 2.5rem */}
             <div className="tech-font" style={{ fontSize: '2.5rem', fontWeight: '700', color: 'white', textShadow: '0 0 20px rgba(168, 85, 247, 0.6)', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
                 {value} <span style={{ fontSize: '0.5em', opacity: 0.5, letterSpacing: '2px' }}>%</span>
             </div>
 
-            {/* Track Area with Labels */}
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '600px', gap: '1.5rem' }}>
-                
-                {/* Left Label */}
                 <span className="tech-font" style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     Original
                 </span>
 
-                {/* Interactive Track Area */}
-                <div 
+                <div
                     ref={trackRef}
-                    onMouseDown={(e) => {
-                        setIsDragging(true);
-                        handleMove(e.clientX);
-                    }}
-                    onTouchStart={(e) => {
-                        setIsDragging(true);
-                        handleMove(e.touches[0].clientX);
-                    }}
+                    onMouseDown={(e) => { setIsDragging(true); handleMove(e.clientX); }}
+                    onTouchStart={(e) => { setIsDragging(true); handleMove(e.touches[0].clientX); }}
                     style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center', cursor: 'pointer', touchAction: 'none' }}
                 >
-                    {/* Dark Background Track */}
                     <div style={{ position: 'absolute', width: '100%', height: '8px', background: 'rgba(0, 0, 0, 0.5)', borderRadius: '4px', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }}></div>
-                    
-                    {/* Glowing Active Track */}
                     <div style={{ position: 'absolute', height: '8px', background: '#a855f7', borderRadius: '4px', boxShadow: '0 0 12px #a855f7, 0 0 24px rgba(168, 85, 247, 0.5)', pointerEvents: 'none', width: `${value}%` }}></div>
-                    
-                    {/* Draggable Circular Thumb */}
                     <div style={{ position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)', width: '28px', height: '28px', borderRadius: '50%', background: 'white', boxShadow: '0 0 15px #a855f7, 0 0 5px rgba(255,255,255,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', left: `${value}%` }}>
-                        {/* Inner glowing dot that scales up when dragging */}
                         <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#a855f7', transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transform: isDragging ? 'scale(1.6)' : 'scale(1)' }}></div>
                     </div>
                 </div>
 
-                {/* Right Label */}
                 <span className="tech-font" style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     Segmented
                 </span>
@@ -129,17 +124,14 @@ function GlowingRangeSlider() {
 // MAIN DEMO COMPONENT
 // ==========================================
 export default function Demo() {
-    // States
     const [view, setView] = useState('overlay');
     const [selectedModel, setSelectedModel] = useState('best');
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
-    
-    // Refs
+
     const downloadRef = useRef(null);
     const modelDropdownRef = useRef(null);
 
-    // Click-outside listener
     useEffect(() => {
         function handleClickOutside(event) {
             if (downloadRef.current && !downloadRef.current.contains(event.target)) {
@@ -155,13 +147,17 @@ export default function Demo() {
 
     const handleDownload = (type) => {
         console.log(`Trigger download for: ${type}`);
-        setIsDownloadOpen(false); 
+        setIsDownloadOpen(false);
     };
 
     const currentModelLabel = MODELS.find(m => m.id === selectedModel)?.label || 'Select Model';
 
     return (
         <section id="demo" className="demo-section">
+
+            {/* The Animated Energy Ribbon Background */}
+            <AnimatedBackground />
+
             <h2 className="section-title">Try it Yourself</h2>
 
             <div className="demo-grid">
@@ -179,58 +175,37 @@ export default function Demo() {
                                 </button>
                             ))}
                         </div>
-                        
-                        {/* Download Dropdown (Original Styling Kept) */}
+
                         <div style={{ position: 'relative' }} ref={downloadRef}>
-                            <button 
-                                className="view-btn" 
+                            <button
+                                className="view-btn"
                                 onClick={() => setIsDownloadOpen(!isDownloadOpen)}
                                 onMouseOver={(e) => e.target.style.boxShadow = '0 0 12px rgba(255, 255, 255, 0.4)'}
                                 onMouseOut={(e) => e.target.style.boxShadow = 'none'}
-                                style={{
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem'
-                                }}
+                                style={{ transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
-                                DOWNLOAD 
+                                DOWNLOAD
                                 <span style={{ fontSize: '0.7rem', transition: 'transform 0.3s', transform: isDownloadOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                             </button>
-                            
+
                             {isDownloadOpen && (
                                 <div style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    right: 0,
-                                    marginTop: '0.5rem',
-                                    backgroundColor: '#1e293b', 
-                                    border: '1px solid var(--border-subtle)',
-                                    borderRadius: '6px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    minWidth: '150px', 
-                                    zIndex: 50,
-                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
-                                    overflow: 'hidden'
+                                    position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem',
+                                    backgroundColor: '#1e293b', border: '1px solid var(--border-subtle)', borderRadius: '6px',
+                                    display: 'flex', flexDirection: 'column', minWidth: '150px', zIndex: 50,
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)', overflow: 'hidden'
                                 }}>
                                     {[
                                         { id: 'mask png', label: 'Mask PNG' },
                                         { id: 'overlay png', label: 'Overlay PNG' },
                                         { id: 'csv summary', label: 'CSV Summary' }
                                     ].map((option, index, arr) => (
-                                        <button 
-                                            key={option.id}
-                                            onClick={() => handleDownload(option.id)}
+                                        <button
+                                            key={option.id} onClick={() => handleDownload(option.id)}
                                             style={{
-                                                padding: '0.75rem 1rem',
-                                                background: 'transparent',
-                                                border: 'none',
+                                                padding: '0.75rem 1rem', background: 'transparent', border: 'none',
                                                 borderBottom: index === arr.length - 1 ? 'none' : '1px solid var(--border-subtle)',
-                                                color: 'white',
-                                                textAlign: 'left',
-                                                cursor: 'pointer',
-                                                fontSize: '0.85rem',
+                                                color: 'white', textAlign: 'left', cursor: 'pointer', fontSize: '0.85rem',
                                                 transition: 'background-color 0.2s ease'
                                             }}
                                             onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(255,255,255,0.08)'}
@@ -243,7 +218,6 @@ export default function Demo() {
                             )}
                         </div>
                     </div>
-                    
                     <div className="render-area tech-font">
                         <span style={{ opacity: 0.5, letterSpacing: '2px' }}>[ {view.toUpperCase()} RENDER ]</span>
                     </div>
@@ -251,11 +225,8 @@ export default function Demo() {
 
                 {/* ================= SIDEBAR PANEL ================= */}
                 <div className="glass-panel sidebar-panel">
-                    
-                    {/* Model Selector Dropdown */}
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
-                        
                         <div style={{ position: 'relative' }} ref={modelDropdownRef}>
                             <button
                                 onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
@@ -268,19 +239,10 @@ export default function Demo() {
                                     e.target.style.borderColor = 'var(--accent-neon)';
                                 }}
                                 style={{
-                                    width: '100%',
-                                    padding: '0.8rem',
-                                    background: 'rgba(168, 85, 247, 0.1)',
-                                    border: '1px solid var(--accent-neon)',
-                                    borderRadius: '6px',
-                                    color: 'white',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    transition: 'all 0.3s ease'
+                                    width: '100%', padding: '0.8rem', background: 'rgba(168, 85, 247, 0.1)',
+                                    border: '1px solid var(--accent-neon)', borderRadius: '6px', color: 'white',
+                                    fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', display: 'flex',
+                                    justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s ease'
                                 }}
                             >
                                 <span>{currentModelLabel}</span>
@@ -289,44 +251,24 @@ export default function Demo() {
 
                             {isModelDropdownOpen && (
                                 <div style={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: 0,
-                                    width: '100%',
-                                    marginTop: '0.5rem',
-                                    backgroundColor: '#1e293b',
-                                    border: '1px solid var(--border-subtle)',
-                                    borderRadius: '6px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    zIndex: 50,
-                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
-                                    overflow: 'hidden'
+                                    position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '0.5rem',
+                                    backgroundColor: '#1e293b', border: '1px solid var(--border-subtle)', borderRadius: '6px',
+                                    display: 'flex', flexDirection: 'column', zIndex: 50, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)', overflow: 'hidden'
                                 }}>
                                     {MODELS.map((model, index) => {
                                         const isActive = selectedModel === model.id;
                                         const isLast = index === MODELS.length - 1;
-                                        
                                         return (
                                             <button
                                                 key={model.id}
-                                                onClick={() => {
-                                                    setSelectedModel(model.id);
-                                                    setIsModelDropdownOpen(false);
-                                                }}
+                                                onClick={() => { setSelectedModel(model.id); setIsModelDropdownOpen(false); }}
                                                 onMouseOver={(e) => e.target.style.backgroundColor = 'rgba(168, 85, 247, 0.2)'}
                                                 onMouseOut={(e) => e.target.style.backgroundColor = isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent'}
                                                 style={{
-                                                    padding: '0.8rem',
-                                                    background: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
-                                                    border: 'none',
-                                                    borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
-                                                    color: isActive ? 'white' : 'var(--text-muted)',
-                                                    textAlign: 'left',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.9rem',
-                                                    fontWeight: isActive ? '600' : 'normal',
-                                                    transition: 'background-color 0.2s ease'
+                                                    padding: '0.8rem', background: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
+                                                    border: 'none', borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
+                                                    color: isActive ? 'white' : 'var(--text-muted)', textAlign: 'left', cursor: 'pointer',
+                                                    fontSize: '0.9rem', fontWeight: isActive ? '600' : 'normal', transition: 'background-color 0.2s ease'
                                                 }}
                                             >
                                                 {model.label}
@@ -338,7 +280,6 @@ export default function Demo() {
                         </div>
                     </div>
 
-                    {/* Class Distribution */}
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: '1.5rem', paddingTop: '1.5rem' }}>
                             <div className="panel-header" style={{ margin: 0 }}>Class Distribution</div>
@@ -365,10 +306,8 @@ export default function Demo() {
             {/* ================= PERFORMANCE METRICS SECTION ================= */}
             <div className="glass-panel metrics-panel" style={{ marginTop: '2rem' }}>
                 <div className="panel-header" style={{ marginBottom: '1.5rem' }}>Evaluation Metrics</div>
-                
+
                 <div className="metrics-grid">
-                    
-                    {/* Top KPI Cards */}
                     <div className="kpi-container">
                         <div className="kpi-card">
                             <div className="kpi-label">Mean IoU</div>
@@ -389,7 +328,6 @@ export default function Demo() {
                         </div>
                     </div>
 
-                    {/* Per-Class IoU Breakdown */}
                     <div className="per-class-container">
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', fontWeight: '600', letterSpacing: '1px' }}>PER-CLASS IoU</div>
                         <div className="per-class-grid">
@@ -409,12 +347,10 @@ export default function Demo() {
                 </div>
             </div>
 
-            {/* ================= NEW: MODEL COMPARISON BAR GRAPH ================= */}
+            {/* ================= MODEL COMPARISON BAR GRAPH ================= */}
             <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <div className="panel-header">Model Performance Comparison</div>
-                    
-                    {/* Graph Legend */}
                     <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <div style={{ width: '12px', height: '12px', background: 'var(--accent-neon)', borderRadius: '3px' }}></div>
@@ -427,10 +363,7 @@ export default function Demo() {
                     </div>
                 </div>
 
-                {/* Graph Area Container */}
                 <div style={{ position: 'relative', height: '320px', paddingLeft: '40px', paddingTop: '20px' }}>
-                    
-                    {/* Y-Axis Guidelines & Labels */}
                     {[0, 25, 50, 75, 100].map((tick) => (
                         <div key={tick} style={{ position: 'absolute', left: 0, bottom: `${tick}%`, width: '100%', borderBottom: tick === 0 ? '2px solid var(--border-subtle)' : '1px dashed rgba(255,255,255,0.05)', display: 'flex', alignItems: 'flex-end', zIndex: 1 }}>
                             <span className="tech-font" style={{ position: 'absolute', left: '0px', bottom: '-8px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -439,47 +372,21 @@ export default function Demo() {
                         </div>
                     ))}
 
-                    {/* Bars Container */}
                     <div style={{ display: 'flex', height: '100%', justifyContent: 'space-around', alignItems: 'flex-end', position: 'relative', zIndex: 2, paddingLeft: '20px' }}>
                         {MODEL_COMPARISON_DATA.map((data, idx) => (
                             <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '1rem', width: '20%' }}>
-                                
-                                {/* Grouped Bars */}
                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', height: '100%', width: '100%', justifyContent: 'center' }}>
-                                    
-                                    {/* IoU Bar */}
-                                    <div style={{ 
-                                        height: `${data.iou}%`, 
-                                        width: '45px', 
-                                        background: 'var(--accent-neon)', 
-                                        borderRadius: '4px 4px 0 0', 
-                                        position: 'relative',
-                                        transition: 'height 1s ease-out',
-                                        boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)'
-                                    }}>
+                                    <div style={{ height: `${data.iou}%`, width: '45px', background: 'var(--accent-neon)', borderRadius: '4px 4px 0 0', position: 'relative', transition: 'height 1s ease-out', boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)' }}>
                                         <span className="tech-font" style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem', color: 'white', fontWeight: 'bold' }}>
                                             {data.iou}
                                         </span>
                                     </div>
-
-                                    {/* Accuracy Bar */}
-                                    <div style={{ 
-                                        height: `${data.acc}%`, 
-                                        width: '45px', 
-                                        background: '#10b981', 
-                                        borderRadius: '4px 4px 0 0', 
-                                        position: 'relative',
-                                        transition: 'height 1s ease-out 0.2s',
-                                        boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)'
-                                    }}>
+                                    <div style={{ height: `${data.acc}%`, width: '45px', background: '#10b981', borderRadius: '4px 4px 0 0', position: 'relative', transition: 'height 1s ease-out 0.2s', boxShadow: '0 0 10px rgba(16, 185, 129, 0.2)' }}>
                                         <span className="tech-font" style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem', color: 'white', fontWeight: 'bold' }}>
                                             {data.acc}
                                         </span>
                                     </div>
-                                    
                                 </div>
-                                
-                                {/* X-Axis Label */}
                                 <div style={{ color: 'white', fontSize: '0.9rem', fontWeight: '600', marginTop: '10px' }}>
                                     {data.name}
                                 </div>

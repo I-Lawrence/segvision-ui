@@ -32,6 +32,95 @@ const PER_CLASS_IOU = [
     { name: 'Others', val: '55.2%', color: '#64748b' }
 ];
 
+// ==========================================
+// GLOWING RANGE SLIDER COMPONENT
+// ==========================================
+function GlowingRangeSlider() {
+    const [value, setValue] = useState(50);
+    const [isDragging, setIsDragging] = useState(false);
+    const trackRef = useRef(null);
+
+    const handleMove = (clientX) => {
+        if (!trackRef.current) return;
+        const rect = trackRef.current.getBoundingClientRect();
+        let x = clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        const percentage = Math.round((x / rect.width) * 100);
+        setValue(percentage);
+    };
+
+    const onMouseMove = (e) => handleMove(e.clientX);
+    const onTouchMove = (e) => handleMove(e.touches[0].clientX);
+    const stopDragging = () => setIsDragging(false);
+
+    useEffect(() => {
+        if (isDragging) {
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', stopDragging);
+            window.addEventListener('touchmove', onTouchMove);
+            window.addEventListener('touchend', stopDragging);
+        }
+        return () => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', stopDragging);
+            window.removeEventListener('touchmove', onTouchMove);
+            window.removeEventListener('touchend', stopDragging);
+        };
+    }, [isDragging]);
+
+    return (
+        <div className="glass-panel" style={{ padding: '2.5rem', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginTop: '2rem' }}>
+            {/* Dynamic Value Display - Font size decreased to 2.5rem */}
+            <div className="tech-font" style={{ fontSize: '2.5rem', fontWeight: '700', color: 'white', textShadow: '0 0 20px rgba(168, 85, 247, 0.6)', fontVariantNumeric: 'tabular-nums', lineHeight: '1' }}>
+                {value} <span style={{ fontSize: '0.5em', opacity: 0.5, letterSpacing: '2px' }}>%</span>
+            </div>
+
+            {/* Track Area with Labels */}
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '600px', gap: '1.5rem' }}>
+                
+                {/* Left Label */}
+                <span className="tech-font" style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Original
+                </span>
+
+                {/* Interactive Track Area */}
+                <div 
+                    ref={trackRef}
+                    onMouseDown={(e) => {
+                        setIsDragging(true);
+                        handleMove(e.clientX);
+                    }}
+                    onTouchStart={(e) => {
+                        setIsDragging(true);
+                        handleMove(e.touches[0].clientX);
+                    }}
+                    style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center', cursor: 'pointer', touchAction: 'none' }}
+                >
+                    {/* Dark Background Track */}
+                    <div style={{ position: 'absolute', width: '100%', height: '8px', background: 'rgba(0, 0, 0, 0.5)', borderRadius: '4px', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }}></div>
+                    
+                    {/* Glowing Active Track */}
+                    <div style={{ position: 'absolute', height: '8px', background: '#a855f7', borderRadius: '4px', boxShadow: '0 0 12px #a855f7, 0 0 24px rgba(168, 85, 247, 0.5)', pointerEvents: 'none', width: `${value}%` }}></div>
+                    
+                    {/* Draggable Circular Thumb */}
+                    <div style={{ position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)', width: '28px', height: '28px', borderRadius: '50%', background: 'white', boxShadow: '0 0 15px #a855f7, 0 0 5px rgba(255,255,255,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', pointerEvents: 'none', left: `${value}%` }}>
+                        {/* Inner glowing dot that scales up when dragging */}
+                        <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#a855f7', transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transform: isDragging ? 'scale(1.6)' : 'scale(1)' }}></div>
+                    </div>
+                </div>
+
+                {/* Right Label */}
+                <span className="tech-font" style={{ color: 'var(--text-muted, #94a3b8)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Segmented
+                </span>
+            </div>
+        </div>
+    );
+}
+
+// ==========================================
+// MAIN DEMO COMPONENT
+// ==========================================
 export default function Demo() {
     // States
     const [view, setView] = useState('overlay');
@@ -156,7 +245,7 @@ export default function Demo() {
                 {/* ================= SIDEBAR PANEL ================= */}
                 <div className="glass-panel sidebar-panel">
                     
-                    {/* Model Selector Dropdown (Original Styling Kept) */}
+                    {/* Model Selector Dropdown */}
                     <div style={{ paddingBottom: '1.5rem', borderBottom: '1px solid var(--border-subtle)' }}>
                         <div className="panel-header">Select Model</div>
                         
@@ -262,6 +351,9 @@ export default function Demo() {
                     </div>
                 </div>
             </div>
+
+            {/* ================= NEW: GLOWING RANGE SLIDER ================= */}
+            <GlowingRangeSlider />
 
             {/* ================= NEW: PERFORMANCE METRICS SECTION ================= */}
             <div className="glass-panel metrics-panel" style={{ marginTop: '2rem' }}>

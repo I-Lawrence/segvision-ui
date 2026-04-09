@@ -1,76 +1,104 @@
-.navbar-container {
+.navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
+    height: 80px;
     z-index: 1000;
-    background: rgba(8, 3, 17, 0.5);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(11, 5, 24, 0.7); /* Translucent dark background */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: center;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.navbar-container {
+    width: 100%;
     max-width: 1400px;
-    margin: 0 auto;
-    padding: 1.2rem 3rem;
-}
-
-.navbar-brand {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: white;
-    text-decoration: none;
-    letter-spacing: -0.5px;
+    padding: 0 2.5rem;
     display: flex;
+    justify-content: space-between; /* Pushes brand to left, menu to right */
     align-items: center;
 }
 
-.navbar-brand span {
-    background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+/* --- Brand/Logo Styling --- */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-1px);
+}
+
+.eye-icon {
+    color: var(--accent-neon, #a855f7);
+    filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.6));
+}
+
+.logo-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    /* Optional: subtle gradient for the logo text */
+    background: linear-gradient(to right, #fff, #a855f7);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.navbar-nav {
+/* --- Menu/Links Styling --- */
+.nav-menu {
     display: flex;
-    gap: 3rem;
     align-items: center;
+    gap: 2rem; /* Spacing between links */
 }
 
 .nav-link {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.85rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted, #94a3b8);
+    font-size: 1.31rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0.5rem 0;
     position: relative;
+    transition: color 0.3s ease;
 }
 
 .nav-link:hover {
-    color: white;
-    text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+    color: #fff;
 }
 
+/* Underline effect on hover */
 .nav-link::after {
     content: '';
     position: absolute;
-    bottom: -6px;
+    bottom: 0;
     left: 0;
-    width: 0%;
+    width: 0;
     height: 2px;
-    background: var(--accent-neon);
+    background: var(--accent-neon, #a855f7);
     transition: width 0.3s ease;
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+    box-shadow: 0 0 8px var(--accent-neon);
 }
 
 .nav-link:hover::after {
     width: 100%;
+}
+
+/* --- Responsive Layout --- */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 1rem;
+    }
+    .logo-text {
+        display: none; /* Only show Eye icon on mobile to save space */
+    }
 }
